@@ -24,7 +24,7 @@ The following environment variables are required to run the project:
 
 -   `DOODSTREAM_API_KEY`: API key for doodstream.com
 -   `DOODSTREAM_API_URL`: API URL for doodstream.com (default: `https://doodapi.com`)
--   `SITENAME`: Name of the website (default: `bokeptube`)
+-   `SITENAME`: Name of the website (default: `bokepind`)
 
 ## Development
 
