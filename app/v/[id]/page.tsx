@@ -10,6 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Metadata, ResolvingMetadata } from "next";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { humanDuration, humanSize } from "@/lib/utils";
+import { SITENAME } from "@/lib/constants";
+import Script from "next/script";
 
 import { Button } from "@/components/ui/button";
 import CopyButton from "@/components/copy-button";
@@ -17,7 +19,6 @@ import LikeButton from "@/components/like-button";
 import Link from "next/link";
 import MessageBox from "@/components/message-box";
 import React from "react";
-import { SITENAME } from "@/lib/constants";
 import SearchCardList from "@/components/search/search-list";
 import doodstream from "@/lib/doodstream";
 
@@ -30,6 +31,7 @@ export async function generateMetadata(
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     const data = await doodstream.getFile({ file_code: params.id as string });
+     const upstream = await doodstream.getUpstream();
     if (data.status !== 200) {
         return {
             title: data.msg,
@@ -39,11 +41,7 @@ export async function generateMetadata(
 
     const file = data.result[0];
     const title = `${file.title} - ${SITENAME}`;
-    const description = `${file.title} - Duration: ${humanDuration(
-        file.length
-    )} - Views: ${file.views} views - Size: ${humanSize(
-        file.size
-    )} - Uploaded On ${new Date(file.uploaded + ".000Z").toLocaleString()}`;
+    const description = `${file.title} di ${SITENAME} Video Bokep Indo Jepang Jav Barat Simontok Xpanas Viral Terbaru Bocil Ngentot Jilbab`;
     const image = file.splash_img;
     const previousOgImages = (await parent).openGraph?.images || [];
     const previousTwImages = (await parent).twitter?.images || [];
@@ -60,6 +58,11 @@ export async function generateMetadata(
             title,
             description,
             images: [...previousOgImages, image],
+            url: `/v/${file.filecode}`,
+            type: `article`,
+        },
+        alternates: {
+            canonical: `/v/${file.filecode}`,
         },
     };
 }
@@ -79,11 +82,72 @@ export default async function Video({ params }: PageProps) {
     }
 
     const file = data.result[0];
+	const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: `${file.title}`,
+        image: file.splash_img,
+        description: `${file.title} di ${SITENAME} Video Bokep Indo Jepang Jav Barat Simontok Xpanas Viral Terbaru Bocil Ngentot Jilbab`,
+        url: `https://bokepind.pages.dev/v/${file.filecode}`,
+        datePublished: new Date(
+            file.uploaded + ".000Z"
+        ).toISOString(),
+        publisher: {
+            '@type': 'Organization',
+            name: `${SITENAME}`,
+            logo: 'https://bokepind.pages.dev/favicon.ico'},
+            author: {
+                '@type': 'Person',
+                name: 'admin',
+                url: 'https://bokepind.pages.dev'
+              }
+        }
+        const jsonLd2 = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: `${file.title}`,
+        image: file.splash_img,
+        description: `${file.title} di ${SITENAME} Video Bokep Indo Jepang Jav Barat Simontok Xpanas Viral Terbaru Bocil Ngentot Jilbab`,
+        url: `https://bokepind.pages.dev/v/${file.filecode}`,
+        datePublished: new Date(
+            file.uploaded + ".000Z"
+        ).toISOString(),
+        publisher: {
+            '@type': 'Organization',
+            name: `${SITENAME}`,
+            logo: 'https://bokepind.pages.dev/favicon.ico'},
+            author: {
+                '@type': 'Person',
+                name: 'admin',
+                url: 'https://bokepind.pages.dev'
+              }
+        }
     return (
-        <div className="grid col-span-full gap-4 md:gap-4 md:mx-10">
+        <div className="grid col-span-full gap-4 md:gap-4 md:mx-10" itemProp="video" itemScope itemType="http://schema.org/VideoObject">
+<meta itemProp="author" content="admin" />
+<meta itemProp="name" content={`${file.title}`} />
+<meta itemProp="description" content={`${file.title} di ${SITENAME} Video Bokep Indo Jepang Jav Barat Simontok Xpanas Viral Terbaru Bocil Ngentot Jilbab`} />
+<meta itemProp="duration" content={`${file.length}`} />
+<meta itemProp="thumbnailUrl" content={`${file.splash_img}`} />
+<meta itemProp="embedURL" content={`https://doodstream.com/e/${file.filecode}`} />
+<meta itemProp="uploadDate" content={`${new Date(
+            file.uploaded + ".000Z"
+        ).toISOString()}`} />
+        <section>
+        {/* Add JSON-LD to your page */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd2) }}
+        />
+        {/* ... */}
+        </section>
             <iframe
                 className="w-full h-[30vh] md:h-[55vh] lg:h-[70vh]"
-                src={`https://${upstream}/${file.protected_embed}`}
+                src={`https://doodstream.com/e/${file.filecode}`}
                 scrolling="no"
                 title={file.title}
                 frameBorder={0}
@@ -94,76 +158,15 @@ export default async function Video({ params }: PageProps) {
                     <CardTitle className="text-xl md:text-3xl font-bold">
                         {file.title}
                     </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-flow-row lg:grid-flow-col">
-                        <Table>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className="flex gap-2 items-center">
-                                        <LapTimerIcon className="size-4 md:size-5"></LapTimerIcon>
-                                        Duration
-                                    </TableCell>
-                                    <TableCell>
-                                        {humanDuration(file.length)}
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell className="flex gap-2 items-center">
-                                        <RocketIcon className="size-4 md:size-5"></RocketIcon>
-                                        Views
-                                    </TableCell>
-                                    <TableCell>{file.views}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell className="flex gap-2 items-center">
-                                        <CubeIcon className="size-4 md:size-5"></CubeIcon>
-                                        Size
-                                    </TableCell>
-                                    <TableCell>
-                                        {humanSize(file.size)}
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell className="flex gap-2 items-center">
-                                        <CalendarIcon className="size-4 md:size-5"></CalendarIcon>
-                                        Uploaded
-                                    </TableCell>
-                                    <TableCell>
-                                        {new Date(
-                                            file.uploaded + ".000Z"
-                                        ).toLocaleString()}
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                        <div className="grid grid-cols-2 gap-2 mt-8 md:grid-cols-3 lg:grid-cols-2 lg:ml-4 lg:my-4">
-                            <Link
-                                href={`https://${upstream}/d/${file.filecode}`}
-                                className="col-span-full md:col-auto lg:col-span-full"
-                            >
-                                <Button className="w-full">
-                                    <DownloadIcon className="size-4 me-1 mb-1"></DownloadIcon>
-                                    Download
-                                </Button>
-                            </Link>
-                            <CopyButton className="bg-secondary lg:col-span-full">
-                                <Share1Icon className="size-4 me-1 mb-0.5"></Share1Icon>
-                                Share
-                            </CopyButton>
-                            <LikeButton
-                                className="lg:col-span-full"
-                                useButton={true}
-                                file={file}
-                            />
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
+                </CardHeader><center><iframe title='ads' allowFullScreen={true} frameBorder={0} height='260' scrolling='no' src='https://kademole.blogspot.com' width='320'></iframe></center>
+            <p>{file.title} di {SITENAME} Video Bokep Indo Jepang Jav Barat Simontok Xpanas Viral Terbaru Bocil Ngentot Jilbab Smp Mama Sma Viral Video Bokep Indo Viral Terbaru Bocil Ngentot Jilbab Smp Mama Sma Jepang Jav Barat Simontok hub sotwe olmek avtube pijat pure gudang pemerkosaan rumah tobrut inggris ngintip vcs binor yandex update remaja {SITENAME} wiki raja bokeptube full porno seponga simontok {file.title} playbokep indobokep xpanasonline indoh janda streaming jepang barat korea japan jav cina japanese china rusia arab india thailand hd anime hentai bokepind gudang avtub pijat sotwe rumah pemerkosaan inggris xpanas pure tobrut vcs ngintip binor {SITENAME} remaja yandex update perselingkuhan wiki raja full com porno indoh Hotbabes Big Tits Family Freeporn Ass Naked Celebs Nude Cam Hot Videos Fucking Free Porno Adult Movies Mom Freesex Nudelive Cams Women Stepmom Hotwife Bigtits Melons Tube Huge Tits Pornos Film x Titshits Pornofilme Nice Natural Fuq Girls Teen Sex Pornstars Tube Dick Jihad</p>
+            <iframe title='ads' allowFullScreen={true} frameBorder={0} height='290' scrolling='no' src='https://kademole2.blogspot.com' width='320'></iframe><iframe title='ads' allowFullScreen={true} frameBorder={0} height='290' scrolling='no' src='https://kademole70.blogspot.com' width='320'></iframe>
+</Card>
             <h2 className="text-2xl font-bold text-center my-4">
                 Related Video {file.title}
             </h2>
-            <SearchCardList query={file.title.split(" ")[2]} />
+            <SearchCardList query={file.title.split(" ")[3]} />
+<Script src="https://js.juicyads.com/jp.php?c=947403z2v256s2w2x2f4x2c4&u=http%3A%2F%2Fwww.juicyads.rocks"/>
         </div>
     );
 }
