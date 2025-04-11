@@ -40,7 +40,7 @@ export async function generateMetadata(
     }
 
     const file = data.result[0];
-    const title = `${file.title} - ${SITENAME}`;
+    const title = `${file.title}`;
     const description = `${file.title} di ${SITENAME} Video Bokep Indo Jepang Jav Barat Simontok Xpanas Viral Terbaru Bocil Ngentot Jilbab`;
     const image = file.splash_img;
     const previousOgImages = (await parent).openGraph?.images || [];
@@ -62,7 +62,7 @@ export async function generateMetadata(
             type: `article`,
         },
         alternates: {
-            canonical: `/v/${file.filecode}`,
+            canonical: `/v/${file.filecode}#${file.title}`,
         },
     };
 }
@@ -88,7 +88,7 @@ export default async function Video({ params }: PageProps) {
         name: `${file.title}`,
         image: file.splash_img,
         description: `${file.title} di ${SITENAME} Video Bokep Indo Jepang Jav Barat Simontok Xpanas Viral Terbaru Bocil Ngentot Jilbab`,
-        url: `https://bokepind.pages.dev/v/${file.filecode}${file.title}`,
+        url: `https://bokepind.pages.dev/v/${file.filecode}#${file.title}`,
         datePublished: new Date(
             file.uploaded + ".000Z"
         ).toISOString(),
@@ -108,7 +108,7 @@ export default async function Video({ params }: PageProps) {
         headline: `${file.title}`,
         image: file.splash_img,
         description: `${file.title} di ${SITENAME} Video Bokep Indo Jepang Jav Barat Simontok Xpanas Viral Terbaru Bocil Ngentot Jilbab`,
-        url: `https://bokepind.pages.dev/v/${file.filecode}${file.title}`,
+        url: `https://bokepind.pages.dev/v/${file.filecode}#${file.title}`,
         datePublished: new Date(
             file.uploaded + ".000Z"
         ).toISOString(),
@@ -129,7 +129,7 @@ export default async function Video({ params }: PageProps) {
 <meta itemProp="description" content={`${file.title} di ${SITENAME} Video Bokep Indo Jepang Jav Barat Simontok Xpanas Viral Terbaru Bocil Ngentot Jilbab`} />
 <meta itemProp="duration" content={`${file.length}`} />
 <meta itemProp="thumbnailUrl" content={`${file.splash_img}`} />
-<meta itemProp="embedURL" content={`https://doodstream.com/e/${file.filecode}${file.title}`} />
+<meta itemProp="embedURL" content={`https://doodstream.com/e/${file.filecode}#${file.title}`} />
 <meta itemProp="uploadDate" content={`${new Date(
             file.uploaded + ".000Z"
         ).toISOString()}`} />
